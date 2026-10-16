@@ -5,7 +5,7 @@ import Counter from "../../clientcomponent/counter";
 
 const URL = "https://jsonplaceholder.typicode.com/posts";
 
-const ClientComponent = () => {
+const ClientComp = () => {
   const [postData, setPostData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -76,4 +76,4 @@ const ClientComponent = () => {
   );
 };
 
-export default ClientComponent;
+export default ClientComp;

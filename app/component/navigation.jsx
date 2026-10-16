@@ -24,6 +24,14 @@ export default function Navigation() {
           </li>
 
           <li>
+            <Link href="/datafetch/clientcomp">Client Data Fetch</Link>
+          </li>
+
+          <li>
+            <Link href="/datafetch/servercomp">Server Data Fetch</Link>
+          </li>
+
+          <li>
             <Link href="/team">Team Page</Link>
           </li>
         </ul>
