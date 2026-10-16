@@ -1,15 +1,40 @@
-"use client";
+import { Suspense } from "react";
+import SingleProfilePost from "./single-profile-post";
 
-import {use} from "react";
+const fetchUser = async (username) => {
+  try {
+    const response = await fetch("https://jsonplaceholder.typicode.com/users");
 
-const SingleProfilePost = (props) => {
-  const user = use(props.user);
-  console.log(user);
+    if (!response.ok) {
+      throw new Error("Failed to fetch users");
+    }
 
+    const users = await response.json();
+    return users.find((user) => user.username === username);
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    throw error;
+  }
+};
+
+const ProfileLoader = async ({ params }) => {
+  const { username } = await params;
+
+  const user = fetchUser(username);
+
+  return <SingleProfilePost user={user} />;
+};
+
+const UserPage = ({ params }) => {
   return (
-    <h1>
-      user: {user.username}, postId: {props.postId} 
-    </h1>
+    <div>
+      <h1 className="text-3xl font-bold">User</h1>
+
+      <Suspense fallback={<p>Loading user...</p>}>
+        <ProfileLoader params={params} />
+      </Suspense>
+    </div>
   );
-}:
-export default SingleProfilePost;
+};
+
+export default UserPage;
