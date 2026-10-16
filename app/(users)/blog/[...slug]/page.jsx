@@ -1,6 +1,5 @@
 const Blog = async (props) => {
   const { slug } = await props.params;
-  console.log("sluf");
 
   return (
     <div>
