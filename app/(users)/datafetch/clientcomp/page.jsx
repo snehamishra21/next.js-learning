@@ -1,174 +1,146 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+
+const fetchRandomUser = async () => {
+  const response = await fetch("https://randomuser.me/api/");
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch random user");
+  }
+
+  const data = await response.json();
+  return data.results[0];
+};
 
 const DataFetchClient = () => {
-  const searchParams = useSearchParams();
-
-  const [userInfo, setUserInfo] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const userName = searchParams.get("name")?.trim();
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await fetchRandomUser();
+      setUser(data);
+    } catch (err) {
+      setError(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    if (!userName) {
-      setUserInfo(null);
-      setError("");
-      return;
-    }
+    let active = true;
 
-    const fetchGender = async () => {
+    (async () => {
       try {
-        setLoading(true);
-        setError("");
-        setUserInfo(null);
-
-        const response = await fetch(
-          `https://api.genderize.io?name=${encodeURIComponent(
-            userName
-          )}&country_id=US`
-        );
-
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-          throw new Error(data.error || "Failed to fetch data");
-        }
-
-        setUserInfo(data);
-      } catch (error) {
-        console.error("Error:", error);
-        setError(error.message);
+        const data = await fetchRandomUser();
+        if (active) setUser(data);
+      } catch (err) {
+        if (active) setError(err.message || "Something went wrong");
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
+    })();
+
+    return () => {
+      active = false;
     };
-
-    fetchGender();
-  }, [userName]);
-
-  // Case 1: name missing
-  // Case 2: name empty
-  // Case 3: only spaces
-  if (!userName) {
-    return (
-      <div className="text-left p-5" style={{ color: "green" }}>
-        <h1 className="text-2xl font-bold">No Name Provided</h1>
-
-        <p style={{ color: "darkolivegreen" }}>
-          Please provide a valid name in the URL.
-        </p>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="text-left p-5">
-        <p>Loading...</p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="text-left p-5" style={{ color: "crimson" }}>
-        <h1 className="text-2xl font-bold">Unable to fetch data</h1>
-
-        <p>{error}</p>
-      </div>
-    );
-  }
-
-  if (!userInfo) {
-    return null;
-  }
-
-  const isMale = userInfo.gender === "male";
-  const isFemale = userInfo.gender === "female";
-
-  const confidencePercentage =
-    userInfo.probability !== null
-      ? (userInfo.probability * 100).toFixed(2)
-      : 0;
+  }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full">
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold text-gray-800">
-            Gender Prediction
+    <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 className="gradient-text text-3xl font-bold sm:text-4xl">
+            Random User — Client
           </h1>
 
-          <p className="text-gray-500 mt-2">
-            Result for {userInfo.name}
+          <p className="mt-2 text-muted">
+            Profile fetched in the browser from randomuser.me.
           </p>
         </div>
 
-        <div className="flex justify-center mb-6">
-          <div
-            className={`w-24 h-24 rounded-full flex items-center justify-center text-4xl ${
-              isMale
-                ? "bg-blue-100 text-blue-600"
-                : isFemale
-                ? "bg-pink-100 text-pink-600"
-                : "bg-gray-100 text-gray-600"
-            }`}
-          >
-            {isMale ? "👨" : isFemale ? "👩" : "❓"}
+        <button
+          type="button"
+          onClick={load}
+          disabled={loading}
+          className="btn-primary rounded-full px-6 py-2.5 text-sm font-semibold disabled:opacity-60"
+        >
+          {loading ? "Fetching..." : "Fetch Random User"}
+        </button>
+      </div>
+
+      {loading && (
+        <div className="flex flex-col items-center py-16">
+          <div className="loader" />
+          <p className="loading-text text-muted">Fetching a random profile...</p>
+        </div>
+      )}
+
+      {error && (
+        <p className="mt-8 rounded-xl border border-red-300 bg-red-50 p-4 text-red-700 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+          {error}
+        </p>
+      )}
+
+      {!loading && !error && user && (
+        <div className="mt-10 flex justify-center">
+          <div className="hover-card w-full max-w-md rounded-2xl border border-border bg-surface p-8 text-center">
+            <div className="mx-auto mb-6 h-28 w-28 overflow-hidden rounded-full ring-4 ring-primary/40">
+              <Image
+                src={user.picture.large}
+                alt={`${user.name.first} ${user.name.last}`}
+                width={112}
+                height={112}
+                className="h-full w-full object-cover"
+              />
+            </div>
+
+            <h2 className="text-2xl font-bold capitalize">
+              {user.name.first} {user.name.last}
+            </h2>
+
+            <p className="mt-1 text-muted">@{user.login.username}</p>
+
+            <span
+              className={`mt-4 inline-block rounded-full px-4 py-1 text-sm font-semibold capitalize ${
+                user.gender === "male"
+                  ? "bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300"
+                  : "bg-pink-100 text-pink-700 dark:bg-pink-950 dark:text-pink-300"
+              }`}
+            >
+              {user.gender}
+            </span>
+
+            <dl className="mt-6 space-y-3 text-left">
+              {[
+                ["Email", user.email],
+                ["Phone", user.phone],
+                [
+                  "Location",
+                  `${user.location.city}, ${user.location.country}`,
+                ],
+                ["Age", `${user.dob.age} years old`],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="flex flex-col gap-0.5 border-b border-border pb-3 last:border-b-0 sm:flex-row sm:gap-4"
+                >
+                  <dt className="text-sm font-medium text-muted sm:w-24">
+                    {label}
+                  </dt>
+
+                  <dd className="break-all text-sm font-semibold">{value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
-
-        <div className="mb-4">
-          <p className="text-gray-500">Name</p>
-
-          <h2 className="text-xl font-bold text-gray-800 capitalize">
-            {userInfo.name}
-          </h2>
-        </div>
-
-        <div className="mb-4">
-          <p className="text-gray-500">Gender</p>
-
-          <h2
-            className={`text-xl font-bold capitalize ${
-              isMale
-                ? "text-blue-600"
-                : isFemale
-                ? "text-pink-600"
-                : "text-gray-600"
-            }`}
-          >
-            {userInfo.gender || "Not Found"}
-          </h2>
-        </div>
-
-        <div className="mb-4">
-          <p className="text-gray-500">Probability</p>
-
-          <h2 className="text-xl font-bold text-gray-800">
-            {confidencePercentage}%
-          </h2>
-        </div>
-
-        <div className="mb-4">
-          <p className="text-gray-500">Count</p>
-
-          <h2 className="text-xl font-bold text-gray-800">
-            {userInfo.count ?? "Not Available"}
-          </h2>
-        </div>
-
-        <div>
-          <p className="text-gray-500">Country</p>
-
-          <h2 className="text-xl font-bold text-gray-800">
-            {userInfo.country_id || "Not Available"}
-          </h2>
-        </div>
-      </div>
+      )}
     </div>
   );
 };

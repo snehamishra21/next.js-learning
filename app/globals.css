@@ -1,21 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #fffaf5;
+  --foreground: #1c1917;
+  --primary: #ea580c;
+  --primary-dark: #c2410c;
+  --accent: #f59e0b;
+  --surface: #ffffff;
+  --muted: #78716c;
+  --border: #fde7d3;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-accent: var(--accent);
+  --color-surface: var(--surface);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
   --font-sans: var(--font-roboto);
   --font-mono: var(--font-roboto-mono);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0c0a09;
+    --foreground: #f5f5f4;
+    --primary: #fb923c;
+    --primary-dark: #ea580c;
+    --accent: #fbbf24;
+    --surface: #1c1917;
+    --muted: #a8a29e;
+    --border: #292524;
   }
 }
 
@@ -23,41 +41,161 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-a:hover {
-  color: red;
+/* =========================
+   Brand / gradient text
+========================= */
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--accent), var(--primary));
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gradientShift 4s ease infinite;
 }
 
-@import "tailwindcss";
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-roboto);
-  --font-mono: var(--font-roboto-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  50% {
+    background-position: 100% 50%;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+/* =========================
+   Logo hover
+========================= */
+
+.logo-mark {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.35s ease;
 }
 
-a:hover {
-  color: red;
+.logo-link:hover .logo-mark {
+  transform: rotate(-8deg) scale(1.1);
+  box-shadow: 0 8px 25px -5px rgba(234, 88, 12, 0.55);
+}
+
+.logo-link:hover .logo-word {
+  letter-spacing: 0.06em;
+}
+
+.logo-word {
+  transition: letter-spacing 0.35s ease;
+}
+
+/* =========================
+   Nav link hover effects
+========================= */
+
+.nav-link {
+  position: relative;
+  color: var(--foreground);
+  transition: color 0.25s ease;
+}
+
+.nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+
+.nav-link:hover {
+  color: var(--primary);
+}
+
+.nav-link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.nav-link-active {
+  color: var(--primary);
+}
+
+.nav-link-active::after {
+  transform: scaleX(1);
+}
+
+/* =========================
+   Card hover
+========================= */
+
+.hover-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.hover-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 40px -12px rgba(234, 88, 12, 0.25);
+  border-color: var(--primary);
+}
+
+/* =========================
+   Button effects
+========================= */
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  color: #fff;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, filter 0.25s ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 25px -8px rgba(234, 88, 12, 0.6);
+  filter: brightness(1.05);
+}
+
+.btn-primary:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.btn-outline {
+  border: 2px solid var(--primary);
+  color: var(--primary);
+  transition: background 0.25s ease, color 0.25s ease, transform 0.25s ease;
+}
+
+.btn-outline:hover {
+  background: var(--primary);
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+/* =========================
+   Hero
+========================= */
+
+.hero-overlay {
+  background: radial-gradient(ellipse at 30% 50%, rgba(234, 88, 12, 0.55), rgba(12, 10, 9, 0.85) 70%);
+}
+
+.hero-float {
+  animation: heroFloat 5s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-14px);
+  }
 }
 
 /* =========================
@@ -68,7 +206,7 @@ a:hover {
   width: 50px;
   height: 50px;
   border: 5px solid #e5e7eb;
-  border-top: 5px solid #2563eb;
+  border-top: 5px solid var(--primary);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
@@ -82,8 +220,6 @@ a:hover {
     transform: rotate(360deg);
   }
 }
-
-/* Loading Text Effect */
 
 .loading-text {
   margin-top: 16px;

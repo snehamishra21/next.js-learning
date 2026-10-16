@@ -4,9 +4,26 @@ const nextConfig = {
   experimental: {
     agentFeedback: true,
   },
-  cacheComponents: true,
-  partialPrefetching: true,
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "randomuser.me",
+        pathname: "/api/**",
+      },
+      {
+        protocol: "https",
+        hostname: "cdn.dummyjson.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "dummyjson.com",
+        pathname: "/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

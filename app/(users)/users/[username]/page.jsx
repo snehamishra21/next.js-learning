@@ -2,19 +2,16 @@ import { Suspense } from "react";
 import SingleProfilePost from "./single-profile-post";
 
 const fetchUser = async (username) => {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const response = await fetch("https://dummyjson.com/users?limit=0");
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
-    }
-
-    const users = await response.json();
-    return users.find((user) => user.username === username);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
   }
+
+  const data = await response.json();
+  return data.users.find(
+    (user) => user.username.toLowerCase() === username.toLowerCase()
+  );
 };
 
 const ProfileLoader = async ({ params }) => {
@@ -27,12 +24,21 @@ const ProfileLoader = async ({ params }) => {
 
 const UserPage = ({ params }) => {
   return (
-    <div>
-      <h1 className="text-3xl font-bold">User</h1>
+    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
+      <h1 className="gradient-text text-3xl font-bold sm:text-4xl">User</h1>
 
-      <Suspense fallback={<p>Loading user...</p>}>
-        <ProfileLoader params={params} />
-      </Suspense>
+      <div className="mt-8">
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center py-16">
+              <div className="loader" />
+              <p className="loading-text text-muted">Loading user...</p>
+            </div>
+          }
+        >
+          <ProfileLoader params={params} />
+        </Suspense>
+      </div>
     </div>
   );
 };

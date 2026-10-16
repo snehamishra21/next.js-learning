@@ -1,20 +1,18 @@
 import { Suspense } from "react";
+import Image from "next/image";
 import UserPosts from "./user-posts";
 
 const fetchUser = async (username) => {
-  try {
-    const response = await fetch("https://jsonplaceholder.typicode.com/users");
+  const response = await fetch("https://dummyjson.com/users?limit=0");
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch users");
-    }
-
-    const users = await response.json();
-    return users.find((user) => user.username === username);
-  } catch (error) {
-    console.error("Error fetching user:", error);
-    throw error;
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
   }
+
+  const data = await response.json();
+  return data.users.find(
+    (user) => user.username.toLowerCase() === username.toLowerCase()
+  );
 };
 
 const UserDetail = async ({ params }) => {
@@ -24,24 +22,56 @@ const UserDetail = async ({ params }) => {
 
   if (!user) {
     return (
-      <p className="text-gray-600">
-        User &quot;{username}&quot; not found
+      <p className="rounded-xl border border-border bg-surface p-4 text-muted">
+        User &quot;{username}&quot; not found. Try a username like{" "}
+        <code className="font-semibold text-primary">emilys</code>.
       </p>
     );
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold">{user.name}</h2>
-      <p className="text-gray-600">
-        {user.username} &middot; {user.email}
-      </p>
+      <div className="hover-card flex flex-col items-center gap-5 rounded-2xl border border-border bg-surface p-8 sm:flex-row sm:items-start">
+        <Image
+          src={user.image}
+          alt={`${user.firstName} ${user.lastName}`}
+          width={96}
+          height={96}
+          className="rounded-full ring-4 ring-primary/30"
+        />
 
-      <h3 className="text-xl font-semibold mt-6">Posts by {user.name}</h3>
+        <div>
+          <h2 className="text-2xl font-bold">
+            {user.firstName} {user.lastName}
+          </h2>
 
-      <Suspense fallback={<p>Loading posts...</p>}>
-        <UserPosts userId={user.id} />
-      </Suspense>
+          <p className="mt-1 text-muted">
+            {user.username} &middot; {user.email}
+          </p>
+
+          <p className="mt-1 text-sm text-muted">
+            {user.address?.city}, {user.address?.country} &middot;{" "}
+            {user.phone}
+          </p>
+        </div>
+      </div>
+
+      <h3 className="mt-10 text-xl font-semibold">
+        Posts by {user.firstName}
+      </h3>
+
+      <div className="mt-4">
+        <Suspense
+          fallback={
+            <div className="flex flex-col items-center py-12">
+              <div className="loader" />
+              <p className="loading-text text-muted">Loading posts...</p>
+            </div>
+          }
+        >
+          <UserPosts userId={user.id} />
+        </Suspense>
+      </div>
     </div>
   );
 };
