@@ -1,30 +1,76 @@
+import { contactAction } from "./contactaction";
+
+export const metadata = {
+  title: "Contact Page",
+  description: "This is my contact page",
+  authors: [
+    { name: "Sneha Mishra" },
+    {
+      name: "Sneha Technical",
+      url: "https://example.com",
+    },
+  ],
+  keywords: ["nextjs", "reactjs", "fullstack"],
+};
+
 const Contact = async () => {
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6">
-      <h1 className="gradient-text text-3xl font-bold sm:text-4xl">Contact</h1>
+    <div className="min-h-screen bg-[rgb(14,14,14)] text-white flex items-center justify-center p-6">
+      <div className="w-full max-w-md bg-gray-900 p-8 rounded-xl shadow-lg">
+        <h1 className="text-3xl font-bold text-center mb-6">
+          Contact Us
+        </h1>
 
-      <p className="mt-4 text-muted">Hello Contact — get in touch!</p>
-
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {[
-          { label: "Email", value: "hello@sneha.dev", icon: "✉" },
-          { label: "Phone", value: "+91 98765 43210", icon: "☎" },
-          { label: "Location", value: "India", icon: "⌂" },
-        ].map(({ label, value, icon }) => (
-          <div
-            key={label}
-            className="hover-card flex items-center gap-4 rounded-2xl border border-border bg-surface p-5"
-          >
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary/10 text-xl text-primary">
-              {icon}
-            </span>
-
-            <div>
-              <p className="text-sm text-muted">{label}</p>
-              <p className="font-semibold">{value}</p>
-            </div>
+        <form action={contactAction} className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block mb-2">
+              Name
+            </label>
+            <input
+              type="text"
+              id="fullName"
+              name="fullName"
+              placeholder="Enter your name"
+              required
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+            />
           </div>
-        ))}
+
+          <div>
+            <label htmlFor="email" className="block mb-2">
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="message" className="block mb-2">
+              Message
+            </label>
+            <textarea
+              id="message"
+              name="message"
+              rows={4}
+              placeholder="Enter your message"
+              required
+              className="w-full p-3 bg-gray-800 border border-gray-700 rounded-lg text-white"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 p-3 rounded-lg font-semibold"
+          >
+            Send Message
+          </button>
+        </form>
       </div>
     </div>
   );
